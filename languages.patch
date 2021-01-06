@@ -1,0 +1,14 @@
+diff --git a/build-gcc.sh b/build-gcc.sh
+index cc216b88a..51813c281 100755
+--- a/build-gcc.sh
++++ b/build-gcc.sh
+@@ -70,7 +70,7 @@ register_var_option "--ppl-version=<version>" PPL_VERSION "Specify ppl version"
+ PACKAGE_DIR=
+ register_var_option "--package-dir=<path>" PACKAGE_DIR "Create archive tarball in specific directory"
+ 
+-ENABLE_LANGUAGES="c,c++"
++ENABLE_LANGUAGES="c,c++,fortran"
+ register_var_option "--enable-languages=<name>" ENABLE_LANGUAGES "Experimental: specify which languages to build"
+ 
+ BUILD_DEBUGGABLE="no"
+

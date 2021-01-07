@@ -46,6 +46,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
     zip \
     zlib1g-dev
 
+RUN mkdir -p /opt/cmake-builder/cmake-3.19.2
+
+WORKDIR /opt/cmake-builder/cmake-3.19.2
+
 # install latest cmake
 RUN mkdir -p /opt/cmake-builder && \
     cd /opt/cmake-builder && \
@@ -55,8 +59,10 @@ RUN mkdir -p /opt/cmake-builder && \
     ./bootstrap && \
     make && \
     sudo make install && \
-    sudo rm -rf /opt/cmake-builder && \
-    cmake --version
+    cmake --version && \
+    rm -rf /opt/cmake-builder
+
+RUN cmake --version
 
 #Install du NDK
 ENV ANDROID_NDK_HOME /opt/android-ndk

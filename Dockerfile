@@ -47,16 +47,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
     zlib1g-dev
 
 # install latest cmake
-RUN mkdir -p /opt/cmake-builder
-WORKDIR /opt/cmake-builder
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2.tar.gz
-RUN tar -zxvf cmake-3.19.2.tar.gz
-WORKDIR /opt/cmake-builder/cmake-3.19.2
-RUN ./bootstrap
-RUN make
-RUN sudo make install
-
-RUN cmake --version
+RUN mkdir -p /opt/cmake-builder && \
+    cd /opt/cmake-builder && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2.tar.gz && \
+    tar -zxvf cmake-3.19.2.tar.gz && \
+    /opt/cmake-builder/cmake-3.19.2 && && \
+    ./bootstrap && \
+    make && \
+    sudo make install && \
+    rm -rf /opt/cmake-builder && \
+    cmake --version
 
 #Install du NDK
 ENV ANDROID_NDK_HOME /opt/android-ndk
@@ -83,40 +83,33 @@ RUN chmod a+x ~/bin/repo
 
 RUN mkdir /opt/ndk-builder/
 WORKDIR /opt/ndk-builder/
-
-RUN echo $PATH
-RUN ls ~/bin
-
-RUN ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b gcc
-RUN ~/bin/repo sync
-RUN ~/bin/repo forall -c git checkout ndk-${ANDROID_NDK_VERSION} || true
-
-WORKDIR /opt/ndk-builder/toolchain/gcc
 COPY languages.patch .
-RUN patch < languages.patch
-RUN rm languages.patch
 
-
-# builder for arm64-v8a
-RUN ./build.py --toolchain aarch64-linux-android
-
-RUN mkdir -p /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/
-RUN mv /opt/ndk-builder/out/dist/gcc-arm64-linux-x86_64.tar.bz2 /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/
-WORKDIR /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/
-RUN tar -xvf gcc-arm64-linux-x86_64.tar.bz2
-RUN mv linux-x86_64 linux-x86_64.bak
-RUN mv aarch64-linux-android-4.9 linux-x86_64
-
-# builder for armeabi-v7a
-WORKDIR /opt/ndk-builder/toolchain/gcc
-RUN ./build.py --toolchain arm-linux-androideabi
-
-RUN mkdir -p /opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/
-RUN mv /opt/ndk-builder/out/dist/gcc-arm-linux-x86_64.tar.bz2 /opt/android-ndk/toolchains/arm-linux-androideabi-4.9//prebuilt/
-WORKDIR /opt/android-ndk/toolchains/arm-linux-androideabi-4.9//prebuilt/
-RUN tar -xvf gcc-arm-linux-x86_64.tar.bz2
-RUN mv linux-x86_64 linux-x86_64.bak
-RUN mv arm-linux-androideabi-4.9 linux-x86_64
+RUN ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b gcc && \
+    ~/bin/repo sync && \
+    ~/bin/repo forall -c git checkout ndk-${ANDROID_NDK_VERSION} || true && \
+    cd /opt/ndk-builder/toolchain/gcc && \
+    mv /opt/ndk-builder/languages.patch . && \
+    patch < languages.patch && \
+    rm languages.patch && \
+    # builder for arm64-v8a
+    ./build.py --toolchain aarch64-linux-android && \
+    mkdir -p /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/ && \
+    mv /opt/ndk-builder/out/dist/gcc-arm64-linux-x86_64.tar.bz2 /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/ && \
+    cd /opt/android-ndk/toolchains/aarch64-linux-android-4.9/prebuilt/ && \
+    tar -xvf gcc-arm64-linux-x86_64.tar.bz2 && \
+    mv linux-x86_64 linux-x86_64.bak && \
+    mv aarch64-linux-android-4.9 linux-x86_64 && \
+    # builder for armeabi-v7a
+    cd /opt/ndk-builder/toolchain/gcc && \
+    ./build.py --toolchain arm-linux-androideabi && \
+    mkdir -p /opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/ && \
+    mv /opt/ndk-builder/out/dist/gcc-arm-linux-x86_64.tar.bz2 /opt/android-ndk/toolchains/arm-linux-androideabi-4.9//prebuilt/ && \
+    cd /opt/android-ndk/toolchains/arm-linux-androideabi-4.9//prebuilt/ && \
+    tar -xvf gcc-arm-linux-x86_64.tar.bz2 && \
+    mv linux-x86_64 linux-x86_64.bak && \
+    mv arm-linux-androideabi-4.9 linux-x86_64 && \
+    rm -rf /opt/ndk-builder
 
 #Install de apache ANT
 ARG ANT_VERSION=1.9.4

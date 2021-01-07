@@ -51,11 +51,11 @@ RUN mkdir -p /opt/cmake-builder && \
     cd /opt/cmake-builder && \
     wget https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2.tar.gz && \
     tar -zxvf cmake-3.19.2.tar.gz && \
-    /opt/cmake-builder/cmake-3.19.2 && \
+    cd cmake-3.19.2 && \
     ./bootstrap && \
     make && \
     sudo make install && \
-    rm -rf /opt/cmake-builder && \
+    sudo rm -rf /opt/cmake-builder && \
     cmake --version
 
 #Install du NDK

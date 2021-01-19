@@ -141,12 +141,14 @@ RUN touch ~/.android/repositories.cfg
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "tools"
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "build-tools;30.0.2"
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "platforms;android-30"
+RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "platforms;android-27"
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "platform-tools"
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "patcher;v4"
 RUN /opt/android-sdk/tools/bin/sdkmanager --sdk_root=/opt/android-sdk "emulator"
 
 # installs buildozer and dependencies
-RUN pip3 install --upgrade Cython wheel pip virtualenv buildozer toml colorama jinja2 python-for-android kivy
+RUN pip3 install --upgrade Cython wheel pip virtualenv toml colorama jinja2 python-for-android kivy
+RUN pip3 install https://github.com/germn/buildozer/archive/add_adb_args_option.zip
 ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR ${WORK_DIR}
